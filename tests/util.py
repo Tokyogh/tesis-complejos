@@ -6,12 +6,35 @@ una base SQLite temporal, de modo que las pruebas nunca tocan
 """
 
 import io
+import atexit
 import os
 import pathlib
 import sys
 import tempfile
 
 RAIZ = pathlib.Path(__file__).resolve().parent.parent
+_TEMPORALES = []
+_APPS = []
+
+
+def _limpiar_temporales():
+    for app in _APPS:
+        try:
+            with app.app_context():
+                from app import db
+
+                db.session.remove()
+                db.engine.dispose()
+        except Exception:
+            pass
+    for archivo in _TEMPORALES:
+        try:
+            os.remove(archivo)
+        except (FileNotFoundError, PermissionError):
+            pass
+
+
+atexit.register(_limpiar_temporales)
 
 if str(RAIZ) not in sys.path:
     sys.path.insert(0, str(RAIZ))
@@ -21,7 +44,14 @@ if hasattr(sys.stdout, "buffer"):
 
 
 def ruta_temporal(nombre="pruebas"):
-    return os.path.join(tempfile.mkdtemp(prefix="polideportivo-"), f"{nombre}.db")
+    # Mantiene la SQLite temporal dentro del proyecto, que es escribible en
+    # entornos restringidos donde %TEMP% puede estar fuera del sandbox.
+    descriptor, archivo = tempfile.mkstemp(
+        prefix=f".polideportivo-test-{nombre}-", suffix=".db", dir=RAIZ / "instance"
+    )
+    os.close(descriptor)
+    _TEMPORALES.append(archivo)
+    return archivo
 
 
 def crear_app_de_pruebas(nombre="pruebas", **configuracion):
@@ -29,7 +59,9 @@ def crear_app_de_pruebas(nombre="pruebas", **configuracion):
 
     ajustes = {"SQLALCHEMY_DATABASE_URI": f"sqlite:///{ruta_temporal(nombre)}", "TESTING": True}
     ajustes.update(configuracion)
-    return create_app(ajustes)
+    app = create_app(ajustes)
+    _APPS.append(app)
+    return app
 
 
 def componentes_de_prueba(app):

@@ -46,12 +46,11 @@ revisar("resultado con total", b"Total estimado" in respuesta.data)
 revisar("area calculada 840 m2", b"840 m2" in respuesta.data)
 
 with app.app_context():
-    revisar("cotizacion guardada", Cotizacion.query.count() == 1)
+    revisar("estimacion anonima no se persiste", Cotizacion.query.count() == 0)
     cotizacion = Cotizacion.query.first()
     revisar(
-        "superficie guardada",
-        cotizacion is not None and abs(cotizacion.superficie - 840.0) < 0.01,
-        f"-> {cotizacion.superficie if cotizacion else None}",
+        "sin cotizacion anonima en historial",
+        cotizacion is None,
     )
 
 invalido = dict(datos)

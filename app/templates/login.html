@@ -30,6 +30,7 @@
             {% endif %}
 
             <form method="post" action="{{ url_for('auth.login', next=request.args.get('next')) }}" novalidate>
+                    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
                 <div class="space-y-5">
                     <div>
                         <label for="correo" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500">Correo electrónico</label>

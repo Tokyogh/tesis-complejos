@@ -35,6 +35,11 @@ class User(UserMixin, db.Model):
 
     __table_args__ = (db.CheckConstraint("rol IN ('admin', 'usuario')", name="ck_usuario_rol"),)
 
+    @property
+    def is_active(self):
+        """Flask-Login no debe aceptar sesiones de cuentas desactivadas."""
+        return bool(self.activo)
+
     def __repr__(self):
         return f"<User {self.correo} ({self.rol})>"
 

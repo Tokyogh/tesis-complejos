@@ -9,5 +9,6 @@ venv/
 *.log
 instance/*.db-wal
 instance/*.db-shm
+instance/.polideportivo-test-*
 node_modules/
 package-lock.json

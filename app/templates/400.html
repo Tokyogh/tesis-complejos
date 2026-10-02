@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block titulo %}Solicitud no válida{% endblock %}
+
+{% block contenido %}
+<section class="relative overflow-hidden bg-acero-950 text-white">
+    <div class="absolute inset-0 patron-plano-oscuro opacity-50"></div>
+    <div class="absolute top-0 left-1/2 w-96 h-96 -translate-x-1/2 rounded-full bg-arcilla-600/20 blur-3xl"></div>
+
+    <div class="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
+        <p class="cifra text-7xl font-extrabold text-arcilla-500">{{ codigo }}</p>
+        <h1 class="mt-6 text-3xl sm:text-5xl font-extrabold tracking-tight">Solicitud no válida</h1>
+        <p class="mt-5 text-slate-300 leading-relaxed">
+            No pudimos validar el formulario por seguridad. Esto pasa cuando la página estuvo
+            abierta mucho tiempo, cuando se recargó el navegador o cuando el envío se hizo desde
+            otra pestaña.
+        </p>
+        <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="{{ url_for('main.index') }}" class="rounded-xl bg-arcilla-500 px-7 py-4 font-bold text-white shadow-glow transition hover:bg-arcilla-600 hover:-translate-y-0.5">Volver al inicio</a>
+            <button type="button" onclick="window.location.reload()" class="rounded-xl border-2 border-white/20 px-7 py-4 font-bold text-white transition hover:bg-white/10">Recargar la página</button>
+        </div>
+    </div>
+</section>
+{% endblock %}

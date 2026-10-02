@@ -111,6 +111,7 @@
                                 <a href="{{ url_for('admin.materiales') }}" class="menu-perfil-enlace text-arcilla-700">Gestionar materiales</a>
                                 {% endif %}
                                 <form method="post" action="{{ url_for('auth.logout') }}" class="border-t border-slate-100 mt-1 pt-1">
+                    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
                                     <button type="submit" class="menu-perfil-enlace w-full text-left text-red-600">Cerrar sesión</button>
                                 </form>
                             </div>
@@ -145,6 +146,7 @@
                             <p class="truncate text-xs text-slate-500">{{ current_user.correo }}</p>
                         </div>
                         <form method="post" action="{{ url_for('auth.logout') }}">
+                    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
                             <button type="submit" class="mt-1 w-full rounded-lg border border-slate-200 px-4 py-3 text-left text-sm font-semibold text-red-600 transition hover:bg-red-50">Cerrar sesión</button>
                         </form>
                         {% else %}

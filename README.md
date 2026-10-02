@@ -15,6 +15,7 @@ Plataforma web para estimations de construcción de canchas, pistas y complejos 
 ```
 complejos/
 ├── run.py                  # Punto de entrada
+├── iniciar.py              # Prepara dependencias e inicia la aplicación
 ├── requirements.txt
 ├── instance/
 │   └── database.db         # Base SQLite versionada (12 materiales de semilla)
@@ -35,29 +36,31 @@ complejos/
 └── tests/                  # Suites de pruebas
 ```
 
-## Puesta en marcha
+## Inicio desde una descarga ZIP
 
-```bash
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-python run.py
+Instala Python 3.9 o posterior en el computador y extrae el ZIP. Abre una terminal en la carpeta extraída y ejecuta el iniciador:
+
+```powershell
+py iniciar.py
 ```
 
-La aplicación queda disponible en `http://127.0.0.1:5000`. Al arrancar, `create_app()` crea las tablas faltantes, aplica la migración y siembra el catálogo si está vacío.
+En macOS o Linux:
 
-## Credenciales de la cuenta administrativa
+```bash
+python3 iniciar.py
+```
 
-> [!WARNING]
-> Son credenciales de **desarrollo** y están en texto plano en este archivo. Cámbialas o elimina la cuenta antes de publicar el repositorio o desplegar en un servidor real.
+El iniciador crea `.venv`, instala o actualiza las dependencias de `requirements.txt` cuando haga falta y arranca el sitio en `http://127.0.0.1:5000`. Requiere internet la primera vez para descargar dependencias y para cargar los recursos de Tailwind e imágenes. Flask crea las tablas, aplica las migraciones y siembra los materiales al iniciar. Detén el servidor con `Ctrl+C`.
 
-| Campo | Valor |
-| --- | --- |
-| Correo | `admin@polideportivos.ec` |
-| Contraseña | `Polideportivo2026` |
-| Acceso | `/login` → panel en `/admin` |
+## Cuenta administrativa
 
-Para crear otra cuenta administrativa:
+No se crea una cuenta administrativa con credenciales predeterminadas. Para crearla en Windows, inicia el asistente y luego ejecuta el comando indicado:
+
+```powershell
+py iniciar.py --crear-admin
+```
+
+También puedes crearla directamente:
 
 ```bash
 flask --app run.py crear-admin --nombre "Nombre Apellido" --correo "correo@dominio.ec" --clave "ClaveSegura2026"
@@ -94,11 +97,11 @@ flask --app run.py crear-admin    # Alta de administrador (interactivo)
 - **Roles:** `admin` (gestiona todo) y `usuario` (solo sus solicitudes).
 - **Estados de solicitud:** `Pendiente`, `En revisión`, `Aprobado`, `Rechazado`.
 - Aprobar una cita la marca automáticamente como atendida.
-- Las cotizaciones de visitantes se guardan sin `user_id`; al iniciar sesión se asocian a la cuenta.
+- Los visitantes pueden calcular y descargar estimaciones; guardar una cotización en el historial requiere iniciar sesión.
 
 ## Base de datos y migraciones
 
-La base se migra sola al iniciar. `app/migrations.py` agrega por introspección las columnas faltantes (`usuarios`, `estado`, `observaciones`, `user_id`) sin perder registros previos, por lo que se puede ejecutar varias veces.
+La base se migra sola al iniciar. `db.create_all()` crea las tablas nuevas y `app/migrations.py` agrega por introspección las columnas faltantes (`estado`, `observaciones`, `user_id`) en cotizaciones y citas existentes, sin perder registros previos.
 
 ## Pruebas
 
@@ -114,4 +117,3 @@ Cubre catálogo, calculadora, Ecuador, portada, autenticación, roles, paneles y
 | --- | --- |
 | `SECRET_KEY` | Clave de firmado de sesión. Sin valor se usa una clave de desarrollo. |
 | `DATABASE_URL` | Ruta de SQLite. Por defecto `instance/database.db`. |
-flask --app run.py crear-admin --nombre "Tu Nombre" --correo admin@polideportivos.ec --clave "ClaveSegura2026"

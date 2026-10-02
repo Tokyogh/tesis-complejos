@@ -1,6 +1,5 @@
 import os
 import sys
-import tempfile
 
 from util import crear_app_de_pruebas
 
@@ -182,10 +181,8 @@ respuesta = presupuesto(anonimo, "Proyecto invitado")
 revisar("calculadora libre para invitados", respuesta.status_code == 200 and "Total estimado" in respuesta.text)
 revisar("aviso de invitado", "calculando como invitado" in respuesta.text)
 with app.app_context():
-    cotizacion = Cotizacion.query.filter_by(proyecto="Proyecto invitado").one()
-    revisar("cotizacion anonima guardada", cotizacion is not None)
-    revisar("sin user_id", cotizacion.user_id is None)
-    revisar("estado pendiente por defecto", cotizacion.estado == "Pendiente")
+    cotizacion = Cotizacion.query.filter_by(proyecto="Proyecto invitado").first()
+    revisar("cotizacion invitada no se persiste", cotizacion is None)
 
 respuesta = presupuesto(cliente_usuario, "Proyecto de Luis")
 revisar("calculadora con sesion", respuesta.status_code == 200)
@@ -264,7 +261,7 @@ with app.app_context():
 respuesta = admin.get("/admin")
 revisar("GET /admin", respuesta.status_code == 200, f"-> {respuesta.status_code}")
 revisar("lista cotizaciones", "Proyecto de Luis" in respuesta.text)
-revisar("marca visitante anonimo", "Visitante anónimo" in respuesta.text)
+revisar("el panel no incluye cotizaciones de invitados", "Visitante anónimo" not in respuesta.text)
 revisar("resumen de inversion", "Inversión estimada" in respuesta.text)
 revisar("enlace a materiales", "/admin/materiales" in respuesta.text)
 
@@ -427,7 +424,9 @@ revisar("CLI init-db", resultado.exit_code == 0 and "Migraciones" in resultado.o
 
 print()
 print("=== 13. MIGRACION DE BASE EXISTENTE ===")
-ruta_vieja = os.path.join(tempfile.mkdtemp(), "vieja.db")
+from util import ruta_temporal
+
+ruta_vieja = ruta_temporal("vieja")
 import sqlite3
 
 conexion = sqlite3.connect(ruta_vieja)

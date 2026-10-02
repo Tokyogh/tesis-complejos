@@ -267,25 +267,28 @@ def calculadora():
 
         if not errores:
             presupuesto = calcular_presupuesto(datos)
-            parametros = presupuesto["parametros"]
-            cotizacion = Cotizacion(
-                proyecto=proyecto or "Proyecto sin nombre",
-                solicitante=solicitante or None,
-                correo=correo or None,
-                largo=parametros["largo"],
-                ancho=parametros["ancho"],
-                altura=parametros["altura"],
-                num_canchas=parametros["num_canchas"],
-                superficie=parametros["area"],
-                costo_directo=presupuesto["costo_directo"],
-                costo_total=presupuesto["costo_total"],
-                detalle_json=json.dumps(presupuesto["lineas"], ensure_ascii=False),
-                estado="Pendiente",
-                user_id=current_user.id if current_user.is_authenticated else None,
-            )
-            db.session.add(cotizacion)
-            db.session.commit()
-            guardado = current_user.is_authenticated
+            # La estimación sigue disponible para visitantes; solo se registra
+            # como solicitud del historial cuando pertenece a una cuenta.
+            if current_user.is_authenticated:
+                parametros = presupuesto["parametros"]
+                cotizacion = Cotizacion(
+                    proyecto=proyecto or "Proyecto sin nombre",
+                    solicitante=solicitante or None,
+                    correo=correo or None,
+                    largo=parametros["largo"],
+                    ancho=parametros["ancho"],
+                    altura=parametros["altura"],
+                    num_canchas=parametros["num_canchas"],
+                    superficie=parametros["area"],
+                    costo_directo=presupuesto["costo_directo"],
+                    costo_total=presupuesto["costo_total"],
+                    detalle_json=json.dumps(presupuesto["lineas"], ensure_ascii=False),
+                    estado="Pendiente",
+                    user_id=current_user.id,
+                )
+                db.session.add(cotizacion)
+                db.session.commit()
+                guardado = True
 
     return render_template(
         "calculadora.html",

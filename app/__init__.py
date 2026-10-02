@@ -39,17 +39,27 @@ def create_app(test_config=None):
         REMEMBER_COOKIE_HTTPONLY=True,
         REMEMBER_COOKIE_SAMESITE="Lax",
         REMEMBER_COOKIE_DURATION=60 * 60 * 24 * 14,
+        CSRF_ENABLED=True,
         AUTO_CREATE_DB=True,
         AUTO_SEED=True,
     )
 
     if test_config:
         app.config.update(test_config)
+    # Las pruebas usan clientes Flask sin gestión explícita de tokens CSRF.
+    # Mantener la protección activa por defecto en cualquier ejecución normal.
+    if app.testing and "CSRF_ENABLED" not in (test_config or {}):
+        app.config["CSRF_ENABLED"] = False
 
     os.makedirs(app.instance_path, exist_ok=True)
 
     db.init_app(app)
     login_manager.init_app(app)
+
+    from .csrf import csrf_token, proteger_csrf
+
+    app.before_request(proteger_csrf)
+    app.jinja_env.globals["csrf_token"] = csrf_token
 
     from . import models  # noqa: F401
 
@@ -180,6 +190,12 @@ def register_cli(app):
 
 
 def register_error_handlers(app):
+    @app.errorhandler(400)
+    def bad_request(_error):
+        from flask import render_template
+
+        return render_template("400.html", codigo=400), 400
+
     @app.errorhandler(403)
     def forbidden(_error):
         from flask import render_template

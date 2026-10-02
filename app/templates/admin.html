@@ -119,6 +119,7 @@
                         <td class="px-4 py-4">{{ insignia(cita.estado) }}</td>
                         <td class="px-6 py-4">
                             <form method="post" action="{{ url_for('admin.actualizar_estado', tipo='cita', identificador=cita.id) }}" class="flex items-center justify-end gap-2">
+                    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
                                 <select name="estado" class="campo py-2 text-xs w-36" aria-label="Estado de la cita {{ cita.id }}">
                                     {% for estado in estados %}
                                     <option value="{{ estado }}" {% if cita.estado == estado %}selected{% endif %}>{{ estado }}</option>
@@ -174,6 +175,7 @@
                         <td class="px-4 py-4">{{ insignia(cotizacion.estado) }}</td>
                         <td class="px-6 py-4">
                             <form method="post" action="{{ url_for('admin.actualizar_estado', tipo='cotizacion', identificador=cotizacion.id) }}" class="flex items-center justify-end gap-2">
+                    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
                                 <select name="estado" class="campo py-2 text-xs w-36" aria-label="Estado de la cotización {{ cotizacion.id }}">
                                     {% for estado in estados %}
                                     <option value="{{ estado }}" {% if cotizacion.estado == estado %}selected{% endif %}>{{ estado }}</option>

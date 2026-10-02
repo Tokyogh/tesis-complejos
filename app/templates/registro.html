@@ -38,6 +38,7 @@
             </div>
 
             <form method="post" action="{{ url_for('auth.registro', next=request.args.get('next')) }}" class="mt-7" novalidate>
+                    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
                 <div class="grid gap-5 sm:grid-cols-2">
                     <div class="sm:col-span-2">
                         <label for="nombre" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500">Nombre y apellido *</label>

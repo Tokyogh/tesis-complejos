@@ -28,6 +28,7 @@
         </div>
 
         <form method="post" action="{{ url_for('admin.materiales') }}" class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
             <div>
                 <label for="nuevo-nombre" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500">Nombre</label>
                 <input type="text" id="nuevo-nombre" name="nombre" required placeholder="Ej. Pintura acrílica sportiva" class="campo">
@@ -86,6 +87,7 @@
                 </div>
             </summary>
             <form method="post" action="{{ url_for('admin.editar_material', identificador=material.id) }}" class="grid gap-4 border-t border-slate-100 bg-slate-50 px-6 py-6 sm:grid-cols-2 lg:grid-cols-3">
+                    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
                 <div>
                     <label for="nombre-{{ material.id }}" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500">Nombre</label>
                     <input type="text" id="nombre-{{ material.id }}" name="nombre" value="{{ material.nombre }}" required class="campo">
@@ -120,6 +122,7 @@
                 </div>
             </form>
             <form method="post" action="{{ url_for('admin.eliminar_material', identificador=material.id) }}" class="border-t border-slate-100 px-6 py-3 text-right">
+                    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
                 <button type="submit" class="text-xs font-bold text-red-600 transition hover:text-red-700">Eliminar material</button>
             </form>
         </details>
