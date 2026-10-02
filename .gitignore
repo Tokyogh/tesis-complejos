@@ -1,14 +1,2 @@
 __pycache__/
-*.py[cod]
-.venv/
-venv/
-.pytest_cache/
-.idea/
-.vscode/
-.DS_Store
-*.log
-instance/*.db-wal
-instance/*.db-shm
-instance/.polideportivo-test-*
-node_modules/
-package-lock.json
+
