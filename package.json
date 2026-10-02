@@ -1,0 +1,12 @@
+{
+  "name": "polideportivopro-pruebas",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Pruebas de DOM (jsdom) del frontend de PolideportivoPro",
+  "scripts": {
+    "test": "node tests/js/test_precios_dom.js && node tests/js/test_csv_dom.js && node tests/js/test_modal_dom.js"
+  },
+  "devDependencies": {
+    "jsdom": "^30.1.1"
+  }
+}
