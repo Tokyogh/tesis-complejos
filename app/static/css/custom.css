@@ -59,6 +59,65 @@ body {
     background: linear-gradient(90deg, #ea580c, #f97316);
 }
 
+.menu-perfil-enlace {
+    display: block;
+    border-radius: 0.6rem;
+    padding: 0.55rem 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #475569;
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.menu-perfil-enlace:hover {
+    color: #1e3a8a;
+    background-color: #eff3fb;
+}
+
+.estado-insignia {
+    display: inline-block;
+    border-radius: 9999px;
+    border-width: 1px;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.estado-pendiente {
+    border-color: #fcd34d;
+    background-color: #fffbeb;
+    color: #92400e;
+}
+
+.estado-revision {
+    border-color: #93c5fd;
+    background-color: #eff6ff;
+    color: #1d4ed8;
+}
+
+.estado-aprobado {
+    border-color: #6ee7b7;
+    background-color: #ecfdf5;
+    color: #047857;
+}
+
+.estado-rechazado {
+    border-color: #fca5a5;
+    background-color: #fef2f2;
+    color: #b91c1c;
+}
+
+.grupo-material > summary::-webkit-details-marker {
+    display: none;
+}
+
+.grupo-material[open] > summary {
+    background-color: #f8fafc;
+}
+
 .campo {
     width: 100%;
     border-radius: 0.75rem;

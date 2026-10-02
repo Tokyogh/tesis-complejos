@@ -2,6 +2,7 @@ import json
 import math
 
 from flask import Blueprint, jsonify, render_template, request
+from flask_login import current_user
 
 from .. import db
 from ..models import Cotizacion, Material
@@ -252,13 +253,14 @@ def calculadora():
         "componentes": [comp["clave"] for comp in COMPONENTES],
     }
     proyecto = ""
-    solicitante = ""
-    correo = ""
+    solicitante = current_user.nombre if current_user.is_authenticated else ""
+    correo = current_user.correo if current_user.is_authenticated else ""
+    guardado = False
 
     if request.method == "POST":
         proyecto = (request.form.get("proyecto") or "").strip()
-        solicitante = (request.form.get("solicitante") or "").strip()
-        correo = (request.form.get("correo") or "").strip()
+        solicitante = (request.form.get("solicitante") or "").strip() or solicitante
+        correo = (request.form.get("correo") or "").strip() or correo
         datos = _parse_datos(request.form)
         datos_formulario = datos
         errores = validar_datos(datos)
@@ -278,9 +280,12 @@ def calculadora():
                 costo_directo=presupuesto["costo_directo"],
                 costo_total=presupuesto["costo_total"],
                 detalle_json=json.dumps(presupuesto["lineas"], ensure_ascii=False),
+                estado="Pendiente",
+                user_id=current_user.id if current_user.is_authenticated else None,
             )
             db.session.add(cotizacion)
             db.session.commit()
+            guardado = current_user.is_authenticated
 
     return render_template(
         "calculadora.html",
@@ -292,6 +297,7 @@ def calculadora():
         solicitante=solicitante,
         correo=correo,
         indirectos_defecto=PORCENTAJE_INDIRECTOS_DEFECTO,
+        guardado=guardado,
     )
 
 

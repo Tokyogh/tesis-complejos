@@ -4,11 +4,24 @@ from pathlib import Path
 
 import click
 from flask import Flask
+from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
+login_manager = LoginManager()
+login_manager.login_view = "auth.login"
+login_manager.login_message = "Inicia sesión para acceder a esa sección."
+login_manager.login_message_category = "aviso"
+login_manager.session_protection = "strong"
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+ESTILOS_ESTADO = {
+    "Pendiente": "estado-pendiente",
+    "En revisión": "estado-revision",
+    "Aprobado": "estado-aprobado",
+    "Rechazado": "estado-rechazado",
+}
 
 
 def create_app(test_config=None):
@@ -21,6 +34,11 @@ def create_app(test_config=None):
         ),
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
         SQLALCHEMY_ENGINE_OPTIONS={"pool_pre_ping": True},
+        SESSION_COOKIE_HTTPONLY=True,
+        SESSION_COOKIE_SAMESITE="Lax",
+        REMEMBER_COOKIE_HTTPONLY=True,
+        REMEMBER_COOKIE_SAMESITE="Lax",
+        REMEMBER_COOKIE_DURATION=60 * 60 * 24 * 14,
         AUTO_CREATE_DB=True,
         AUTO_SEED=True,
     )
@@ -31,6 +49,7 @@ def create_app(test_config=None):
     os.makedirs(app.instance_path, exist_ok=True)
 
     db.init_app(app)
+    login_manager.init_app(app)
 
     from . import models  # noqa: F401
 
@@ -40,10 +59,16 @@ def create_app(test_config=None):
     register_template_helpers(app)
     register_cli(app)
     register_error_handlers(app)
+    register_login()
 
     if app.config.get("AUTO_CREATE_DB"):
         with app.app_context():
             db.create_all()
+            from .migrations import aplicar_migraciones
+
+            aplicadas = aplicar_migraciones()
+            if aplicadas and not app.config.get("TESTING"):
+                app.logger.info("Migracion aplicada: %s", ", ".join(aplicadas))
         if app.config.get("AUTO_SEED"):
             from .seed import seed_materiales
 
@@ -53,20 +78,33 @@ def create_app(test_config=None):
     return app
 
 
-def register_blueprints(app):
-    from .routes.main_routes import main_bp
-    from .routes.calc_routes import calc_bp
-    from .routes.contact_routes import contact_bp
+def register_login():
+    from .models import User
 
-    app.register_blueprint(main_bp)
-    app.register_blueprint(calc_bp)
-    app.register_blueprint(contact_bp)
+    @login_manager.user_loader
+    def cargar_usuario(identificador):
+        try:
+            return db.session.get(User, int(identificador))
+        except (TypeError, ValueError):
+            return None
+
+    @login_manager.unauthorized_handler
+    def no_autorizado():
+        from flask import redirect, request, url_for
+
+        return redirect(url_for("auth.login", next=request.full_path))
 
 
 def register_template_helpers(app):
     @app.context_processor
     def inject_contextos():
-        return {"anio_actual": datetime.now().year}
+        from .models import ESTADOS_SOLICITUD
+
+        return {
+            "anio_actual": datetime.now().year,
+            "estados_solicitud": ESTADOS_SOLICITUD,
+            "estilos_estado": ESTILOS_ESTADO,
+        }
 
     @app.template_filter("usd")
     def format_usd(value):
@@ -102,7 +140,10 @@ def register_cli(app):
     def init_db():
         """Crea todas las tablas del esquema en SQLite."""
         db.create_all()
-        click.echo("Tablas creadas correctamente.")
+        from .migrations import aplicar_migraciones
+
+        aplicadas = aplicar_migraciones()
+        click.echo(f"Tablas creadas correctamente. Migraciones: {len(aplicadas)} columna(s) agregada(s).")
 
     @app.cli.command("seed")
     def seed_command():
@@ -112,8 +153,39 @@ def register_cli(app):
         insertados = seed_materiales(forzar=True)
         click.echo(f"Seed completado: {insertados} materiales sincronizados.")
 
+    @app.cli.command("crear-admin")
+    @click.option("--nombre", prompt="Nombre y apellido")
+    @click.option("--correo", prompt="Correo electronico")
+    @click.option("--clave", prompt=True, hide_input=True, confirmation_prompt=True)
+    def crear_admin(nombre, correo, clave):
+        """Crea (o actualiza) una cuenta de administrador."""
+        from .models import User
+
+        correo = correo.strip().lower()
+        usuario = User.query.filter_by(correo=correo).first()
+        creado = usuario is None
+
+        if usuario is None:
+            usuario = User(nombre=nombre.strip(), correo=correo, rol="admin")
+            db.session.add(usuario)
+        else:
+            usuario.nombre = nombre.strip()
+            usuario.rol = "admin"
+            usuario.activo = True
+
+        usuario.set_password(clave)
+        db.session.commit()
+        accion = "creada" if creado else "actualizada"
+        click.echo(f"Cuenta de administracion {accion}: {usuario.correo}")
+
 
 def register_error_handlers(app):
+    @app.errorhandler(403)
+    def forbidden(_error):
+        from flask import render_template
+
+        return render_template("403.html", codigo=403), 403
+
     @app.errorhandler(404)
     def not_found(_error):
         from flask import render_template

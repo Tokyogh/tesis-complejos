@@ -17,6 +17,24 @@
             Completa el formulario y coordinaremos una visita a obra, una reunión técnica o una
             cotización formal según tu necesidad.
         </p>
+        <div class="mt-6 flex flex-col gap-3 rounded-xl border border-acero-200 bg-acero-50 px-5 py-4 text-sm sm:flex-row sm:items-center sm:justify-between">
+            {% if current_user.is_authenticated %}
+            <p class="flex items-start gap-2 leading-relaxed text-acero-900">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 shrink-0 mt-0.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.5 20.25a7.5 7.5 0 0 1 15 0v.75H4.5v-.75Z" /></svg>
+                <span>Sesión iniciada como <strong>{{ current_user.nombre }}</strong>. La solicitud quedará registrada en tu historial.</span>
+            </p>
+            <a href="{{ url_for('panel.mis_solicitudes') }}" class="shrink-0 rounded-xl bg-acero-700 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-acero-800">Ver mis solicitudes</a>
+            {% else %}
+            <p class="flex items-start gap-2 leading-relaxed text-acero-900">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 shrink-0 mt-0.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.008v.008H12v-.008Z" /></svg>
+                <span>Puedes revisar el formulario, pero necesitas una cuenta gratuita para enviar la solicitud y seguirla desde tu historial.</span>
+            </p>
+            <span class="flex shrink-0 gap-2">
+                <a href="{{ url_for('auth.login', next=request.full_path.rstrip('?')) }}" class="rounded-xl border border-acero-300 bg-white px-4 py-2.5 text-xs font-bold text-acero-800 transition hover:border-acero-500">Iniciar sesión</a>
+                <a href="{{ url_for('auth.registro', next=request.full_path.rstrip('?')) }}" class="rounded-xl bg-acero-700 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-acero-800">Crear cuenta</a>
+            </span>
+            {% endif %}
+        </div>
     </div>
 </section>
 

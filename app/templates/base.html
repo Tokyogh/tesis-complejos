@@ -80,9 +80,45 @@
                         <a href="{{ url_for('main.materiales') }}" class="nav-enlace {{ 'activo' if ruta_actual.startswith('/materiales') else '' }}">Materiales</a>
                         <a href="{{ url_for('calc.calculadora') }}" class="nav-enlace {{ 'activo' if ruta_actual.startswith('/calculadora') else '' }}">Calculadora</a>
                         <a href="{{ url_for('contact.contacto') }}" class="nav-enlace {{ 'activo' if ruta_actual.startswith('/contacto') else '' }}">Contacto</a>
+                        {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('panel.mis_solicitudes') }}" class="nav-enlace {{ 'activo' if ruta_actual.startswith('/mis-solicitudes') else '' }}">Mis solicitudes</a>
+                        {% endif %}
                         <a href="{{ url_for('calc.calculadora') }}" class="ml-3 inline-flex items-center gap-2 rounded-xl bg-arcilla-500 px-5 py-2.5 text-sm font-bold text-white shadow-glow transition hover:bg-arcilla-600 hover:-translate-y-0.5">
                             Cotizar proyecto
                         </a>
+                        {% if current_user.is_authenticated %}
+                        <div class="relative ml-3" id="perfil-menu">
+                            <button id="perfil-boton" type="button" aria-haspopup="true" aria-expanded="false" class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white py-1.5 pl-1.5 pr-3 transition hover:border-acero-300 hover:shadow-card">
+                                <span class="grid place-items-center w-8 h-8 rounded-lg bg-acero-700 text-[11px] font-extrabold text-white">{{ current_user.iniciales }}</span>
+                                <span class="hidden xl:block text-left leading-tight">
+                                    <span class="block max-w-[9rem] truncate text-xs font-bold text-slate-800">{{ current_user.nombre }}</span>
+                                    <span class="block text-[10px] font-semibold uppercase tracking-wider {{ 'text-arcilla-600' if current_user.es_admin else 'text-slate-400' }}">{{ 'Administrador' if current_user.es_admin else 'Cliente' }}</span>
+                                </span>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-slate-400"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+                            </button>
+                            <div id="perfil-panel" class="hidden absolute right-0 mt-2 w-64 origin-top-right rounded-xl border border-slate-200 bg-white p-2 shadow-float">
+                                <div class="border-b border-slate-100 px-3 py-2.5">
+                                    <p class="truncate text-sm font-bold text-slate-800">{{ current_user.nombre }}</p>
+                                    <p class="truncate text-xs text-slate-500">{{ current_user.correo }}</p>
+                                    {% if current_user.organizacion %}
+                                    <p class="mt-1 truncate text-[11px] text-slate-400">{{ current_user.organizacion }}</p>
+                                    {% endif %}
+                                </div>
+                                <a href="{{ url_for('panel.mis_solicitudes') }}" class="menu-perfil-enlace">Mis solicitudes</a>
+                                <a href="{{ url_for('calc.calculadora') }}" class="menu-perfil-enlace">Nueva cotización</a>
+                                {% if current_user.es_admin %}
+                                <a href="{{ url_for('admin.panel') }}" class="menu-perfil-enlace text-arcilla-700">Panel de administración</a>
+                                <a href="{{ url_for('admin.materiales') }}" class="menu-perfil-enlace text-arcilla-700">Gestionar materiales</a>
+                                {% endif %}
+                                <form method="post" action="{{ url_for('auth.logout') }}" class="border-t border-slate-100 mt-1 pt-1">
+                                    <button type="submit" class="menu-perfil-enlace w-full text-left text-red-600">Cerrar sesión</button>
+                                </form>
+                            </div>
+                        </div>
+                        {% else %}
+                        <a href="{{ url_for('auth.login', next=request.full_path) }}" class="ml-3 inline-flex items-center rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-bold text-slate-700 transition hover:border-acero-300 hover:text-acero-800">Iniciar sesión</a>
+                        <a href="{{ url_for('auth.registro') }}" class="ml-2 inline-flex items-center rounded-xl bg-acero-700 px-4 py-2.5 text-sm font-bold text-white shadow-float transition hover:bg-acero-800">Crear cuenta</a>
+                        {% endif %}
                     </div>
 
                     <button id="menu-movil" type="button" aria-label="Abrir menú" aria-expanded="false" class="lg:hidden grid place-items-center w-11 h-11 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-100 transition">
@@ -98,6 +134,23 @@
                         <a href="{{ url_for('main.materiales') }}" class="block rounded-lg px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-acero-50 hover:text-acero-800 transition">Materiales</a>
                         <a href="{{ url_for('calc.calculadora') }}" class="block rounded-lg px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-acero-50 hover:text-acero-800 transition">Calculadora</a>
                         <a href="{{ url_for('contact.contacto') }}" class="block rounded-lg px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-acero-50 hover:text-acero-800 transition">Contacto</a>
+                        {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('panel.mis_solicitudes') }}" class="block rounded-lg px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-acero-50 hover:text-acero-800 transition">Mis solicitudes</a>
+                        {% if current_user.es_admin %}
+                        <a href="{{ url_for('admin.panel') }}" class="block rounded-lg px-4 py-3 text-sm font-semibold text-arcilla-700 hover:bg-arcilla-50 transition">Panel de administración</a>
+                        <a href="{{ url_for('admin.materiales') }}" class="block rounded-lg px-4 py-3 text-sm font-semibold text-arcilla-700 hover:bg-arcilla-50 transition">Gestionar materiales</a>
+                        {% endif %}
+                        <div class="mt-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+                            <p class="text-sm font-bold text-slate-800">{{ current_user.nombre }}</p>
+                            <p class="truncate text-xs text-slate-500">{{ current_user.correo }}</p>
+                        </div>
+                        <form method="post" action="{{ url_for('auth.logout') }}">
+                            <button type="submit" class="mt-1 w-full rounded-lg border border-slate-200 px-4 py-3 text-left text-sm font-semibold text-red-600 transition hover:bg-red-50">Cerrar sesión</button>
+                        </form>
+                        {% else %}
+                        <a href="{{ url_for('auth.login', next=request.full_path) }}" class="block rounded-lg border border-slate-200 px-4 py-3 text-center text-sm font-bold text-slate-700 transition hover:border-acero-300">Iniciar sesión</a>
+                        <a href="{{ url_for('auth.registro') }}" class="block rounded-lg bg-acero-700 px-4 py-3 text-center text-sm font-bold text-white transition hover:bg-acero-800">Crear cuenta</a>
+                        {% endif %}
                         <a href="{{ url_for('calc.calculadora') }}" class="mt-2 block rounded-xl bg-arcilla-500 px-4 py-3 text-center text-sm font-bold text-white shadow-glow">Cotizar proyecto</a>
                     </div>
                 </div>
@@ -108,10 +161,22 @@
     <main class="flex-1 pt-24">
         {% with mensajes = get_flashed_messages(with_categories=true) %}
             {% if mensajes %}
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-2">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-2 space-y-3">
                     {% for categoria, mensaje in mensajes %}
-                        <div class="flex items-start gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-medium text-emerald-900 shadow-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-emerald-600 shrink-0 mt-0.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+                        {% set estilo = {
+                            'exito': 'border-emerald-200 bg-emerald-50 text-emerald-900',
+                            'error': 'border-red-200 bg-red-50 text-red-900',
+                            'aviso': 'border-amber-200 bg-amber-50 text-amber-900',
+                            'info': 'border-acero-200 bg-acero-50 text-acero-900'
+                        }.get(categoria, 'border-slate-200 bg-white text-slate-800') %}
+                        {% set icono = {
+                            'exito': 'M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z',
+                            'error': 'M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z',
+                            'aviso': 'M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z',
+                            'info': 'M11.25 11.25l.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z'
+                        }.get(categoria, 'M11.25 11.25l.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z') %}
+                        <div class="flex items-start gap-3 rounded-xl border px-5 py-4 text-sm font-medium shadow-sm {{ estilo }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 shrink-0 mt-0.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ icono }}" /></svg>
                             <span>{{ mensaje }}</span>
                         </div>
                     {% endfor %}

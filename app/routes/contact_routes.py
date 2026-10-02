@@ -2,6 +2,7 @@ import re
 from datetime import date
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask_login import current_user
 
 from .. import db
 from ..models import Cita
@@ -37,9 +38,9 @@ def _es_valido(fecha_texto):
 @contact_bp.route("", methods=["GET", "POST"])
 def contacto():
     formulario = {
-        "nombre": "",
-        "correo": "",
-        "telefono": "",
+        "nombre": current_user.nombre if current_user.is_authenticated else "",
+        "correo": current_user.correo if current_user.is_authenticated else "",
+        "telefono": (current_user.telefono or "") if current_user.is_authenticated else "",
         "fecha": date.today().isoformat(),
         "tipo": TIPOS_SERVICIO[0],
         "mensaje": "",
@@ -47,6 +48,10 @@ def contacto():
     errores = []
 
     if request.method == "POST":
+        if not current_user.is_authenticated:
+            flash("Crea tu cuenta o inicia sesión para enviar tu solicitud de asesoría.", "aviso")
+            return redirect(url_for("auth.login", next=request.full_path))
+
         for campo in formulario:
             formulario[campo] = (request.form.get(campo) or "").strip()
 
@@ -74,14 +79,16 @@ def contacto():
                 fecha=fecha,
                 tipo=formulario["tipo"],
                 mensaje=formulario["mensaje"],
+                estado="Pendiente",
+                user_id=current_user.id,
             )
             db.session.add(cita)
             db.session.commit()
             flash(
                 f"¡Gracias {cita.nombre}! Registramos tu solicitud {tipo_resumen(cita.tipo)} para el {cita.fecha.strftime('%d/%m/%Y')}. Te contactaremos por correo.",
-                "success",
+                "exito",
             )
-            return redirect(url_for("contact.contacto"))
+            return redirect(url_for("panel.mis_solicitudes"))
 
     return render_template(
         "contacto.html",

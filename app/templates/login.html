@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block titulo %}Iniciar sesión{% endblock %}
+
+{% block contenido %}
+<section class="relative overflow-hidden bg-white border-b-2 border-arcilla-500">
+    <div class="absolute inset-0 patron-plano-fino opacity-70"></div>
+    <div class="absolute -top-24 right-1/4 w-96 h-96 rounded-full bg-acero-100/70 blur-3xl"></div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <nav class="flex items-center gap-2 text-xs font-semibold text-slate-500">
+            <a href="{{ url_for('main.index') }}" class="hover:text-acero-700 transition">Inicio</a>
+            <span>/</span>
+            <span class="text-arcilla-600">Iniciar sesión</span>
+        </nav>
+        <h1 class="mt-5 text-3xl sm:text-4xl font-extrabold tracking-tight max-w-3xl text-slate-900">Accede a tu cuenta</h1>
+        <p class="mt-4 max-w-2xl text-slate-600 leading-relaxed">
+            Revisa el estado de tus cotizaciones y agenda asesorías técnicas con nuestro equipo.
+        </p>
+    </div>
+</section>
+
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid gap-8 lg:grid-cols-12 items-start">
+    <div class="lg:col-span-7">
+        <div class="marca-esquina rounded-xl border border-slate-200 bg-white p-7 sm:p-9 shadow-lg shadow-slate-200/50">
+            {% if error %}
+            <div class="mb-6 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-5 py-4">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-red-600 shrink-0 mt-0.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" /></svg>
+                <p class="text-sm font-medium text-red-900">{{ error }}</p>
+            </div>
+            {% endif %}
+
+            <form method="post" action="{{ url_for('auth.login', next=request.args.get('next')) }}" novalidate>
+                <div class="space-y-5">
+                    <div>
+                        <label for="correo" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500">Correo electrónico</label>
+                        <input type="email" id="correo" name="correo" value="{{ correo }}" required autofocus autocomplete="email" placeholder="nombre@organizacion.ec" class="campo {% if error %}campo-error{% endif %}">
+                    </div>
+                    <div>
+                        <label for="clave" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500">Contraseña</label>
+                        <input type="password" id="clave" name="clave" required autocomplete="current-password" placeholder="••••••••" class="campo {% if error %}campo-error{% endif %}">
+                    </div>
+                    <label class="flex items-center gap-2.5 text-sm text-slate-600">
+                        <input type="checkbox" name="recordar" value="1" {% if recordar %}checked{% endif %} class="componente-check h-4 w-4 rounded border-slate-300">
+                        Mantener la sesión abierta en este equipo
+                    </label>
+                </div>
+
+                <button type="submit" class="mt-7 flex w-full items-center justify-center gap-2 rounded-xl bg-acero-700 px-6 py-4 text-base font-bold text-white shadow-float transition hover:bg-acero-800 hover:-translate-y-0.5">
+                    Iniciar sesión
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
+                </button>
+            </form>
+
+            <p class="mt-6 text-center text-sm text-slate-600">
+                ¿Todavía no tienes cuenta?
+                <a href="{{ url_for('auth.registro', next=request.args.get('next')) }}" class="font-bold text-arcilla-600 hover:text-arcilla-700 transition">Crear una gratis</a>
+            </p>
+        </div>
+    </div>
+
+    <aside class="lg:col-span-5 space-y-6">
+        <div class="rounded-xl border border-slate-200 bg-acero-950 text-white p-7 relative overflow-hidden shadow-float">
+            <div class="absolute inset-0 patron-plano-oscuro opacity-40"></div>
+            <div class="absolute -top-12 -right-8 w-48 h-48 rounded-full bg-arcilla-600/25 blur-3xl"></div>
+            <div class="relative">
+                <span class="grid place-items-center w-11 h-11 rounded-xl bg-arcilla-500 text-white font-extrabold">PP</span>
+                <h2 class="mt-5 text-lg font-bold">Tu espacio de seguimiento</h2>
+                <ul class="mt-5 space-y-3.5 text-sm text-slate-300">
+                    <li class="flex items-start gap-3">
+                        <span class="mt-0.5 grid place-items-center w-5 h-5 rounded-md bg-white/10 text-[11px] font-bold text-white shrink-0">1</span>
+                        Historial de todas tus cotizaciones con su estado actualizado.
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="mt-0.5 grid place-items-center w-5 h-5 rounded-md bg-white/10 text-[11px] font-bold text-white shrink-0">2</span>
+                        Agenda de visitas a obra y asesorías técnicas.
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="mt-0.5 grid place-items-center w-5 h-5 rounded-md bg-white/10 text-[11px] font-bold text-white shrink-0">3</span>
+                        Descarga el detalle de cada presupuesto en CSV.
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="rounded-xl border border-slate-200 bg-acero-50 p-7">
+            <h2 class="text-base font-bold text-acero-900">¿Solo necesitas estimar?</h2>
+            <p class="mt-2 text-sm leading-relaxed text-acero-800/80">
+                La calculadora es de uso libre: puedes obtener un desglose de costos y descargarlo
+                sin crear una cuenta.
+            </p>
+            <a href="{{ url_for('calc.calculadora') }}" class="mt-5 inline-flex w-full items-center justify-center rounded-xl border-2 border-acero-700 px-5 py-3 text-sm font-bold text-acero-800 transition hover:bg-acero-50">Abrir calculadora</a>
+        </div>
+    </aside>
+</section>
+{% endblock %}
