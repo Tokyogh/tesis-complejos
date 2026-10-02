@@ -1,0 +1,283 @@
+{% extends "base.html" %}
+{% block titulo %}Calculadora de costos{% endblock %}
+
+{% block contenido %}
+<section class="relative overflow-hidden bg-white border-b-2 border-arcilla-500">
+    <div class="absolute inset-0 patron-plano-fino opacity-70"></div>
+    <div class="absolute -top-24 left-1/3 w-96 h-96 rounded-full bg-acero-100/70 blur-3xl"></div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+        <nav class="flex items-center gap-2 text-xs font-semibold text-slate-500">
+            <a href="{{ url_for('main.index') }}" class="hover:text-acero-700 transition">Inicio</a>
+            <span>/</span>
+            <span class="text-arcilla-600">Calculadora</span>
+        </nav>
+        <h1 class="mt-6 text-3xl sm:text-5xl font-extrabold tracking-tight max-w-3xl text-slate-900">Calculadora de costos y superficies</h1>
+        <p class="mt-5 max-w-3xl text-slate-600 leading-relaxed">
+            Ingresa las dimensiones de la cancha, elige los componentes a considerar y obtén un
+            presupuesto preliminar desglosado en dólares, con los precios del catálogo del sistema.
+        </p>
+    </div>
+</section>
+
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    {% if errores %}
+    <div class="mb-8 rounded-xl border border-red-200 bg-red-50 px-6 py-5">
+        <p class="flex items-center gap-2 text-sm font-bold text-red-900">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-red-600"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" /></svg>
+            Revisa los datos ingresados
+        </p>
+        <ul class="mt-3 grid gap-2 sm:grid-cols-2 text-sm text-red-800">
+            {% for error in errores %}
+            <li class="flex items-start gap-2"><span class="mt-2 w-1.5 h-1.5 rounded-full bg-red-400 shrink-0"></span>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <form id="form-calculadora" method="post" action="{{ url_for('calc.calculadora') }}" class="grid gap-8 lg:grid-cols-12">
+        <div class="lg:col-span-5 space-y-6">
+            <div class="marca-esquina rounded-xl border border-slate-200 bg-white p-7 shadow-card">
+                <div class="flex items-center gap-3">
+                    <span class="grid place-items-center w-9 h-9 rounded-lg bg-acero-700 text-white font-mono text-sm font-bold">01</span>
+                    <h2 class="text-lg font-bold text-slate-900">Datos del proyecto</h2>
+                </div>
+
+                <div class="mt-6 space-y-5">
+                    <div>
+                        <label for="proyecto" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500">Nombre del proyecto</label>
+                        <input type="text" id="proyecto" name="proyecto" value="{{ proyecto }}" placeholder="Ej. Polideportivo Comunal Norte" class="campo">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="solicitante" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500">Solicitante</label>
+                            <input type="text" id="solicitante" name="solicitante" value="{{ solicitante }}" placeholder="Nombre y apellido" class="campo">
+                        </div>
+                        <div>
+                            <label for="correo" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500">Correo</label>
+                            <input type="email" id="correo" name="correo" value="{{ correo }}" placeholder="nombre@empresa.ec" class="campo">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="marca-esquina rounded-xl border border-slate-200 bg-white p-7 shadow-card">
+                <div class="flex items-center gap-3">
+                    <span class="grid place-items-center w-9 h-9 rounded-lg bg-acero-700 text-white font-mono text-sm font-bold">02</span>
+                    <h2 class="text-lg font-bold text-slate-900">Dimensiones</h2>
+                </div>
+
+                <div class="mt-6 grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="largo" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500">Largo (m)</label>
+                        <input type="number" step="0.5" min="1" max="200" id="largo" name="largo" value="{{ datos.largo }}" required class="campo campo-dimension">
+                    </div>
+                    <div>
+                        <label for="ancho" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500">Ancho (m)</label>
+                        <input type="number" step="0.5" min="1" max="200" id="ancho" name="ancho" value="{{ datos.ancho }}" required class="campo campo-dimension">
+                    </div>
+                    <div>
+                        <label for="altura" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500">Altura libre (m)</label>
+                        <input type="number" step="0.5" min="2" max="30" id="altura" name="altura" value="{{ datos.altura }}" required class="campo campo-dimension">
+                    </div>
+                    <div>
+                        <label for="num_canchas" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500">Canchas</label>
+                        <input type="number" step="1" min="1" max="12" id="num_canchas" name="num_canchas" value="{{ datos.num_canchas }}" required class="campo campo-dimension">
+                    </div>
+                    <div>
+                        <label for="espesor_losa" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500">Espesor losa (m)</label>
+                        <input type="number" step="0.01" min="0.05" max="0.6" id="espesor_losa" name="espesor_losa" value="{{ datos.espesor_losa }}" required class="campo campo-dimension">
+                    </div>
+                    <div>
+                        <label for="indirectos" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500">Indirectos (%)</label>
+                        <input type="number" step="1" min="0" max="100" id="indirectos" name="indirectos" value="{{ datos.indirectos or indirectos_defecto }}" required class="campo campo-dimension">
+                    </div>
+                </div>
+
+                <div class="mt-6 grid grid-cols-3 gap-3">
+                    <div class="rounded-xl bg-acero-50 border border-acero-100 p-3.5 text-center">
+                        <p class="text-[10px] font-bold uppercase tracking-wider text-acero-600">Superficie</p>
+                        <p class="cifra mt-1 text-lg font-bold text-acero-800"><span id="res-area">0</span> m2</p>
+                    </div>
+                    <div class="rounded-xl bg-acero-50 border border-acero-100 p-3.5 text-center">
+                        <p class="text-[10px] font-bold uppercase tracking-wider text-acero-600">Perímetro</p>
+                        <p class="cifra mt-1 text-lg font-bold text-acero-800"><span id="res-perimetro">0</span> m</p>
+                    </div>
+                    <div class="rounded-xl bg-arcilla-50 border border-arcilla-200 p-3.5 text-center">
+                        <p class="text-[10px] font-bold uppercase tracking-wider text-arcilla-700">Volumen losa</p>
+                        <p class="cifra mt-1 text-lg font-bold text-arcilla-700"><span id="res-volumen">0</span> m3</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="marca-esquina rounded-xl border border-slate-200 bg-white p-7 shadow-card">
+                <div class="flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <span class="grid place-items-center w-9 h-9 rounded-lg bg-acero-700 text-white font-mono text-sm font-bold">03</span>
+                        <h2 class="text-lg font-bold text-slate-900">Componentes</h2>
+                    </div>
+                    <div class="flex items-center gap-3 text-xs font-bold">
+                        <button type="button" id="seleccionar-todos" class="rounded-lg border border-slate-200 px-3 py-1.5 text-acero-700 transition hover:bg-acero-50 hover:border-acero-300">Todos</button>
+                        <button type="button" id="limpiar-todos" class="rounded-lg border border-slate-200 px-3 py-1.5 text-slate-500 transition hover:bg-slate-50">Ninguno</button>
+                    </div>
+                </div>
+
+                <div class="mt-6 space-y-2.5 max-h-96 overflow-y-auto pr-1.5">
+                    {% for componente in componentes %}
+                    <label class="componente-item flex items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 cursor-pointer">
+                        <input type="checkbox" name="componentes" value="{{ componente.clave }}" class="componente-check mt-0.5 h-4 w-4 rounded border-slate-300" {% if componente.clave in datos.componentes %}checked{% endif %}>
+                        <span>
+                            <span class="block text-sm font-bold text-slate-900">{{ componente.etiqueta }}</span>
+                            <span class="mt-0.5 block text-xs leading-relaxed text-slate-500">{{ componente.descripcion }}</span>
+                        </span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <button type="submit" class="group flex w-full items-center justify-center gap-2 rounded-xl bg-arcilla-500 px-6 py-4 text-base font-bold text-white shadow-glow transition hover:bg-arcilla-600 hover:-translate-y-0.5">
+                Calcular presupuesto
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 transition group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
+            </button>
+            <p class="text-center text-xs text-slate-500">La estimación se guarda en el sistema y no requiere registro previo.</p>
+        </div>
+
+        <div class="lg:col-span-7">
+            <div id="panel-resultado" class="lg:sticky lg:top-28">
+                {% if presupuesto %}
+                {% set partida_max = presupuesto.lineas | map(attribute='subtotal') | max %}
+                <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg shadow-slate-200/60">
+                    <div class="relative overflow-hidden bg-acero-950 px-7 py-8 text-white">
+                        <div class="absolute inset-0 patron-plano-oscuro opacity-40"></div>
+                        <div class="absolute -top-16 -right-10 w-56 h-56 rounded-full bg-arcilla-600/25 blur-3xl"></div>
+                        <div class="relative flex items-start justify-between gap-4">
+                            <div>
+                                <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-arcilla-400">Presupuesto preliminar</p>
+                                <p id="res-total" class="cifra mt-3 text-4xl sm:text-5xl font-extrabold tracking-tight">{{ presupuesto.costo_total|usd }}</p>
+                                <p class="mt-2 text-sm text-slate-300">
+                                    Total estimado en USD · {{ presupuesto.parametros.area|num(0)|int }} m2
+                                    <span class="text-slate-500">·</span> <span id="res-costo-m2">{{ presupuesto.costo_m2|usd }}</span> por m2
+                                </p>
+                            </div>
+                            <span class="hidden sm:grid shrink-0 place-items-center h-14 w-14 rounded-xl bg-arcilla-500 text-white font-mono text-[10px] font-bold leading-tight text-center">USD<br>REF</span>
+                        </div>
+                    </div>
+
+                    <div class="px-7 py-6">
+                        <div class="flex flex-col gap-3 border-b border-slate-100 pb-4 sm:flex-row sm:items-center sm:justify-between">
+                            <p class="flex items-start gap-2 text-xs leading-relaxed text-slate-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 shrink-0 mt-0.5 text-arcilla-500"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125" /></svg>
+                                Edita el precio unitario de cualquier partida para hacer tu propio cálculo. Los cambios se aplican solo en esta pantalla y no se envían a la empresa.
+                            </p>
+                            <div class="flex shrink-0 items-center gap-2">
+                                <span id="aviso-personalizado" style="display: none" class="rounded-full border border-arcilla-200 bg-arcilla-50 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-arcilla-700">Cálculo personalizado</span>
+                                <button type="button" id="restablecer-precios" style="display: none" class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-600 transition hover:border-acero-300 hover:text-acero-800">Restablecer precios</button>
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full text-sm">
+                                <thead>
+                                    <tr class="text-left text-[11px] uppercase tracking-wider text-slate-500 border-b-2 border-acero-700">
+                                        <th class="py-3 pr-4 font-bold">Componente</th>
+                                        <th class="py-3 px-3 font-bold text-right">Cantidad</th>
+                                        <th class="py-3 px-3 font-bold text-right">Unitario editable</th>
+                                        <th class="py-3 pl-3 font-bold text-right">Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    {% for linea in presupuesto.lineas %}
+                                    <tr class="linea-tabla transition"
+                                        data-componente="{{ linea.etiqueta }}"
+                                        data-clave="{{ linea.clave }}"
+                                        data-material="{{ linea.material }}"
+                                        data-cantidad="{{ linea.cantidad }}"
+                                        data-unidad="{{ linea.unidad }}"
+                                        data-unitario="{{ linea.precio_unitario }}"
+                                        data-precio-catalogo="{{ linea.precio_unitario }}"
+                                        data-subtotal="{{ linea.subtotal }}">
+                                        <td class="py-4 pr-4">
+                                            <span class="block font-bold text-slate-900">{{ linea.etiqueta }}</span>
+                                            <span class="barra-contenedor mt-1 block h-1 w-full max-w-[180px] rounded-full bg-slate-100 overflow-hidden">
+                                                <span class="barra-partida block h-full rounded-full bg-gradient-to-r from-arcilla-400 to-arcilla-600" style="width: {{ (linea.subtotal / partida_max * 100) | round(1) }}%"></span>
+                                            </span>
+                                            <span class="mt-1.5 block text-xs text-slate-500">{{ linea.material }} <span class="text-slate-400">· merma {{ linea.merma_pct|num(0) }}%</span></span>
+                                        </td>
+                                        <td class="cifra py-4 px-3 text-right font-semibold text-slate-700">{{ linea.cantidad|num }} <span class="text-xs font-sans text-slate-400">{{ linea.unidad }}</span></td>
+                                        <td class="py-4 px-3">
+                                            <div class="flex items-center justify-end gap-1.5">
+                                                <span class="text-xs font-semibold text-slate-400">$</span>
+                                                <input type="number" step="0.01" min="0" inputmode="decimal"
+                                                       class="precio-personal campo-dimension w-24 rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-right text-sm font-semibold text-slate-800 transition focus:border-arcilla-500 focus:outline-none focus:ring-2 focus:ring-arcilla-200"
+                                                       value="{{ linea.precio_unitario }}"
+                                                       data-clave="{{ linea.clave }}"
+                                                       data-catalogo="{{ linea.precio_unitario }}"
+                                                       aria-label="Precio unitario editable de {{ linea.etiqueta }}">
+                                            </div>
+                                        </td>
+                                        <td class="cifra celda-subtotal py-4 pl-3 text-right font-bold text-slate-900">{{ linea.subtotal|usd }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <dl class="mt-6 space-y-3 border-t border-slate-200 pt-6 text-sm">
+                            <div class="flex justify-between items-center">
+                                <dt class="text-slate-600">Costo directo de materiales</dt>
+                                <dd id="res-costo-directo" class="cifra font-bold text-slate-900">{{ presupuesto.costo_directo|usd }}</dd>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <dt class="text-slate-600">Gastos indirectos ({{ presupuesto.porcentaje_indirectos|num(0) }}%)</dt>
+                                <dd id="res-monto-indirectos" class="cifra font-bold text-slate-900">{{ presupuesto.monto_indirectos|usd }}</dd>
+                            </div>
+                            <div class="flex justify-between items-center rounded-xl bg-arcilla-50 border border-arcilla-200 px-5 py-4">
+                                <dt class="font-extrabold text-arcilla-900">Total estimado</dt>
+                                <dd id="res-total-detalle" class="cifra text-2xl font-extrabold text-arcilla-600">{{ presupuesto.costo_total|usd }}</dd>
+                            </div>
+                        </dl>
+
+                        <div class="mt-6 flex flex-col sm:flex-row gap-3">
+                            <button type="button" id="descargar-detalle" class="flex-1 rounded-xl border-2 border-slate-200 px-5 py-3.5 text-sm font-bold text-slate-700 transition hover:border-acero-300 hover:text-acero-800 hover:bg-acero-50">Descargar detalle (CSV)</button>
+                            <a href="{{ url_for('contact.contacto') }}" class="flex-1 rounded-xl bg-acero-700 px-5 py-3.5 text-center text-sm font-bold text-white transition hover:bg-acero-800 shadow-float">Solicitar cotización formal</a>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="relative rounded-xl border-2 border-dashed border-slate-300 bg-white p-10 sm:p-12 text-center">
+                    <div class="absolute inset-0 patron-plano-fino opacity-50 rounded-xl"></div>
+                    <div class="relative">
+                        <span class="inline-grid place-items-center w-20 h-20 rounded-2xl bg-acero-700 text-white shadow-float">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10"><path stroke-linecap="round" stroke-linejoin="round" d="M9 7V3m3 4V3m3 4V3m-9 8h12.25a1.25 1.25 0 0 1 1.28 1.33l-1.2 8a1.25 1.25 0 0 1-1.25 1.07H6.92a1.25 1.25 0 0 1-1.25-1.07l-1.2-8A1.25 1.25 0 0 1 5.75 11Z" /></svg>
+                        </span>
+                        <h2 class="mt-7 text-2xl font-extrabold tracking-tight text-slate-900">Tu estimación aparecerá aquí</h2>
+                        <p class="mt-3 text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
+                            Completa las dimensiones y marca los componentes que deseas considerar.
+                            Puedes ver el desglose en vivo mientras ajustas los números.
+                        </p>
+                        <ul class="mt-9 grid gap-3 text-left max-w-md mx-auto text-sm text-slate-700">
+                            <li class="flex items-start gap-3 rounded-xl bg-slate-50 px-4 py-3">
+                                <span class="shrink-0 grid place-items-center w-6 h-6 rounded-lg bg-acero-700 text-white text-xs font-bold">1</span>
+                                Cantidades calculadas automáticamente por componente
+                            </li>
+                            <li class="flex items-start gap-3 rounded-xl bg-slate-50 px-4 py-3">
+                                <span class="shrink-0 grid place-items-center w-6 h-6 rounded-lg bg-acero-700 text-white text-xs font-bold">2</span>
+                                Precios del catálogo, editables para tu cálculo personal
+                            </li>
+                            <li class="flex items-start gap-3 rounded-xl bg-slate-50 px-4 py-3">
+                                <span class="shrink-0 grid place-items-center w-6 h-6 rounded-lg bg-acero-700 text-white text-xs font-bold">3</span>
+                                Merma y gastos indirectos aplicados por partida
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </form>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/calculator.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+{% block titulo %}Construcción de polideportivos en Ecuador{% endblock %}
+
+{% block contenido %}
+<section class="relative overflow-hidden bg-white">
+    <div class="absolute inset-0 patron-plano-fino opacity-70"></div>
+    <div class="absolute -top-40 -right-32 w-[32rem] h-[32rem] rounded-full bg-arcilla-100/60 blur-3xl"></div>
+    <div class="absolute top-1/3 -left-24 w-80 h-80 rounded-full bg-acero-100/70 blur-3xl"></div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-20 lg:pt-20 lg:pb-28 grid gap-14 lg:grid-cols-12 items-center">
+        <div class="lg:col-span-6">
+            <span class="inline-flex items-center gap-2 rounded-full border border-acero-200 bg-white px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-acero-700 shadow-sm">
+                <span class="w-1.5 h-1.5 rounded-full bg-arcilla-500"></span>
+                Ingeniería deportiva en Ecuador
+            </span>
+
+            <h1 class="mt-7 text-4xl sm:text-5xl lg:text-[3.4rem] font-extrabold leading-[1.05] tracking-tight text-slate-900">
+                Diseña y costea tu <span class="text-acero-700">polideportivo</span> con precisión de ingeniero
+            </h1>
+
+            <p class="mt-6 text-lg text-slate-600 max-w-xl leading-relaxed">
+                Calcula un presupuesto preliminar a partir de las dimensiones reales de tu cancha y de los
+                materiales de uso habitual en construcción deportiva. Precios en dólares, sin registros y sin esperas.
+            </p>
+
+            <div class="mt-9 flex flex-col sm:flex-row gap-4">
+                <a href="{{ url_for('calc.calculadora') }}" class="inline-flex items-center justify-center gap-2 rounded-2xl bg-arcilla-500 px-7 py-4 text-base font-bold text-white shadow-glow transition hover:bg-arcilla-600 hover:-translate-y-0.5">
+                    Calcular presupuesto
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
+                </a>
+                <a href="{{ url_for('main.materiales') }}" class="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-300 bg-white px-7 py-4 text-base font-semibold text-slate-800 shadow-sm transition hover:border-acero-400 hover:text-acero-700 hover:-translate-y-0.5">
+                    Ver catálogo
+                </a>
+            </div>
+
+            <dl class="mt-12 grid grid-cols-3 gap-6 max-w-lg">
+                <div>
+                    <dt class="cifra text-3xl font-extrabold text-slate-900">+120</dt>
+                    <dd class="mt-1 text-xs uppercase tracking-wider text-slate-500">Obras entregadas</dd>
+                </div>
+                <div>
+                    <dt class="cifra text-3xl font-extrabold text-slate-900">18.000</dt>
+                    <dd class="mt-1 text-xs uppercase tracking-wider text-slate-500">m2 construidos</dd>
+                </div>
+                <div>
+                    <dt class="cifra text-3xl font-extrabold text-acero-700">USD</dt>
+                    <dd class="mt-1 text-xs uppercase tracking-wider text-slate-500">Precios en dólares</dd>
+                </div>
+            </dl>
+        </div>
+
+        <div class="lg:col-span-6">
+            <div class="relative">
+                <div class="overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-acero-100 to-arcilla-100 shadow-card">
+                    <img src="{{ imagenes.hero }}" alt="Obra en construcción de estructura metálica para un polideportivo" class="h-[22rem] w-full object-cover sm:h-[26rem]" loading="eager" referrerpolicy="no-referrer" onerror="this.style.display='none'">
+                </div>
+
+                <div class="absolute -bottom-8 -left-4 hidden sm:block w-56 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-float">
+                    <img src="{{ imagenes.cancha }}" alt="Cancha deportiva techada" class="h-32 w-full object-cover" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none'">
+                    <div class="px-4 py-3">
+                        <p class="text-[10px] font-bold uppercase tracking-[0.16em] text-acero-600">Obra en curso</p>
+                        <p class="mt-0.5 text-sm font-bold text-slate-900">Canchas techadas</p>
+                    </div>
+                </div>
+
+                <div class="absolute -top-5 -right-3 hidden sm:flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-float">
+                    <span class="grid place-items-center w-10 h-10 rounded-xl bg-acero-700 text-white text-xs font-extrabold">USD</span>
+                    <div>
+                        <p class="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">Presupuesto</p>
+                        <p class="cifra text-lg font-extrabold text-slate-900">$215,866</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="border-y border-slate-200 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
+            <span class="text-[11px] font-bold uppercase tracking-[0.22em] text-slate-400">Construimos con</span>
+            <span class="text-sm font-bold text-slate-600">Hormigón H20</span>
+            <span class="text-sm font-bold text-slate-600">Acero galvanizado</span>
+            <span class="text-sm font-bold text-slate-600">Césped técnico 50 mm</span>
+            <span class="text-sm font-bold text-slate-600">Iluminación LED</span>
+            <span class="text-sm font-bold text-slate-600">Pisos certificados FIBA</span>
+        </div>
+    </div>
+</section>
+
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-24">
+    <div class="max-w-2xl">
+        <p class="text-xs font-bold uppercase tracking-[0.22em] text-arcilla-600">Metodología</p>
+        <h2 class="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900">De la idea al presupuesto en 3 pasos</h2>
+        <p class="mt-4 text-slate-600">
+            Trabajamos con precios referenciales en dólares sobre {{ total_materiales }} insumos de
+            construcción deportiva, actualizados en la base de datos del sistema.
+        </p>
+    </div>
+
+    <div class="mt-12 grid gap-6 md:grid-cols-3">
+        {% for paso in [
+            {'titulo': 'Define tus dimensiones', 'texto': 'Ingresa largo, ancho, altura libre, espesor de losa y cantidad de canchas.'},
+            {'titulo': 'Elige los componentes', 'texto': 'Selecciona losas, cubierta metálica, cerramiento, iluminación y equipamiento.'},
+            {'titulo': 'Obtén el desglose', 'texto': 'Recibe cantidades, precios unitarios, merma aplicada y total por metro cuadrado.'}
+        ] %}
+        <div class="group relative rounded-2xl border border-slate-200 bg-white p-8 shadow-card transition hover:-translate-y-1 hover:border-acero-200 hover:shadow-float">
+            <span class="grid place-items-center w-12 h-12 rounded-2xl bg-acero-700 text-white font-mono text-lg font-bold">0{{ loop.index }}</span>
+            <h3 class="mt-6 text-lg font-bold text-slate-900">{{ paso.titulo }}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-slate-600">{{ paso.texto }}</p>
+            <span class="mt-6 block h-1 w-10 rounded-full bg-slate-200 transition-all duration-300 group-hover:w-20 group-hover:bg-arcilla-500"></span>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="bg-slate-50 border-t border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-24">
+        <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+            <div class="max-w-2xl">
+                <p class="text-xs font-bold uppercase tracking-[0.22em] text-arcilla-600">Portafolio</p>
+                <h2 class="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900">Proyectos entregados en el país</h2>
+                <p class="mt-4 text-slate-600">Obras nuevas, ampliaciones y rehabilitaciones ejecutadas con municipalidades, clubes y proyectos privados del Ecuador.</p>
+            </div>
+            <a href="{{ url_for('contact.contacto') }}" class="inline-flex shrink-0 items-center gap-2 rounded-2xl bg-acero-700 px-6 py-3.5 text-sm font-bold text-white shadow-card transition hover:bg-acero-800">
+                Solicitar asesoría
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
+            </a>
+        </div>
+
+        <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {% for proyecto in proyectos %}
+            <article class="group flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-card transition hover:-translate-y-1 hover:shadow-float">
+                <div class="relative overflow-hidden bg-gradient-to-br from-acero-100 to-arcilla-100">
+                    <img src="{{ proyecto.imagen }}" alt="{{ proyecto.nombre }}" class="aspect-[4/3] w-full object-cover transition duration-500 group-hover:scale-105" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none'">
+                    <span class="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-acero-800 shadow-sm">{{ proyecto.estado }}</span>
+                    <span class="absolute right-4 top-4 rounded-full bg-acero-950/70 px-3 py-1 font-mono text-[11px] font-semibold text-white">{{ proyecto.anio }}</span>
+                </div>
+
+                <div class="flex flex-1 flex-col p-6">
+                    <p class="flex items-center gap-1.5 text-xs font-semibold text-arcilla-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.14-7.5 11.25-7.5 11.25S4.5 17.64 4.5 10.5a7.5 7.5 0 1 1 15 0Z" /></svg>
+                        {{ proyecto.ubicacion }}
+                    </p>
+                    <h3 class="mt-2 text-lg font-bold text-slate-900">{{ proyecto.nombre }}</h3>
+                    <p class="mt-3 flex-1 text-sm leading-relaxed text-slate-600">{{ proyecto.descripcion }}</p>
+
+                    <dl class="mt-6 flex items-end justify-between gap-3 border-t border-slate-100 pt-5">
+                        <div>
+                            <dt class="text-[10px] uppercase tracking-wider text-slate-400">Superficie</dt>
+                            <dd class="mt-1 font-mono text-xs font-semibold text-slate-700">{{ proyecto.superficie }}</dd>
+                        </div>
+                        <div class="text-right">
+                            <dt class="text-[10px] uppercase tracking-wider text-slate-400">Inversión</dt>
+                            <dd class="cifra mt-1 text-lg font-bold text-acero-700">{{ proyecto.inversion }}</dd>
+                        </div>
+                    </dl>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-24">
+    <div class="max-w-2xl">
+        <p class="text-xs font-bold uppercase tracking-[0.22em] text-arcilla-600">Servicios</p>
+        <h2 class="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900">Un equipo completo para tu proyecto</h2>
+    </div>
+
+    <div class="mt-12 grid gap-6 sm:grid-cols-2">
+        {% for servicio in servicios %}
+        <div class="group flex gap-6 rounded-2xl border border-slate-200 bg-white p-7 shadow-card transition hover:-translate-y-1 hover:border-arcilla-200 hover:shadow-float">
+            <span class="shrink-0 grid place-items-center w-14 h-14 rounded-2xl bg-acero-50 text-acero-700 border border-acero-100 transition group-hover:bg-arcilla-500 group-hover:text-white group-hover:border-arcilla-500">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="w-7 h-7"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+            </span>
+            <div>
+                <h3 class="text-lg font-bold text-slate-900">{{ servicio.titulo }}</h3>
+                <p class="mt-2 text-sm leading-relaxed text-slate-600">{{ servicio.texto }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="relative overflow-hidden bg-white border-t border-slate-200">
+    <div class="absolute inset-0 patron-plano-fino opacity-70"></div>
+    <div class="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-arcilla-50 to-transparent"></div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 grid gap-10 lg:grid-cols-2 items-center">
+        <div>
+            <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900">¿Listo para estimar tu proyecto?</h2>
+            <p class="mt-4 text-slate-600 max-w-xl">
+                Usa la calculadora para obtener un presupuesto preliminar en segundos, o agenda una
+                reunión con nuestros ingenieros para una evaluación en sitio.
+            </p>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-4 lg:justify-end">
+            <a href="{{ url_for('calc.calculadora') }}" class="rounded-2xl bg-arcilla-500 px-7 py-4 text-center font-bold text-white shadow-glow transition hover:bg-arcilla-600 hover:-translate-y-0.5">Abrir calculadora</a>
+            <a href="{{ url_for('contact.contacto') }}" class="rounded-2xl border-2 border-acero-700 px-7 py-4 text-center font-bold text-acero-800 transition hover:bg-acero-700 hover:text-white">Agendar visita</a>
+        </div>
+    </div>
+</section>
+{% endblock %}
